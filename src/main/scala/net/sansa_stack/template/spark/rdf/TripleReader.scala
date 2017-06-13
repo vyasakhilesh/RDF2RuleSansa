@@ -27,11 +27,12 @@ object TripleReader {
 
     val nrOfTriples = triples.count()
     println("Count: " + nrOfTriples)
-
+    val ops = JenaSparkRDDOps(sparkSession.sparkContext)
+    import ops._
     val triplesRDD = NTripleReader.load(sparkSession, new File(input))
 
     val graph: TripleRDD = triplesRDD
-
+    println("Number of triples: " + graph.find(ANY, ANY, ANY).distinct.count())
     println("Number of subjects: " + graph.getSubjects.distinct.count())
     println("Number of predicates: " + graph.getPredicates.distinct.count())
     println("Number of objects: " + graph.getPredicates.distinct.count())
