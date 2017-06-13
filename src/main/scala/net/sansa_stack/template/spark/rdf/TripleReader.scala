@@ -32,7 +32,6 @@ object TripleReader {
 
     val graph: TripleRDD = triplesRDD
 
-    //println("Number of triples: " + graph.find(ANY, ANY, ANY).distinct.count())
     println("Number of subjects: " + graph.getSubjects.distinct.count())
     println("Number of predicates: " + graph.getPredicates.distinct.count())
     println("Number of objects: " + graph.getPredicates.distinct.count())
