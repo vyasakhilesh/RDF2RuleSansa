@@ -36,6 +36,6 @@ object GraphOps {
     printoutrankedtriples.take(5).foreach(println(_))
 
     spark.stop
-    println("Done")
+   
   }
 }
