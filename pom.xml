@@ -79,13 +79,6 @@
 			<version>${sansa.version}</version>
 		</dependency>
 
-		<!-- SANSA ML
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>sansa-ml-spark</artifactId>
-			<version>${sansa.version}</version>
-		</dependency>
--->
 		<!-- Test -->
 		<dependency>
 			<groupId>junit</groupId>
