@@ -1,8 +1,12 @@
-package net.sansa_stack.template.spark.rdf
+package net.sansa_stack.template.spark.graphOps
 
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.rdd.RDD
 import org.apache.spark.graphx._
+import org.apache.spark.graphx.lib.ShortestPaths
+import net.sansa_stack.template.spark.reader.TripleUtils
+import org.apache.spark.graphx.Graph.graphToGraphOps
+import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 
 object GraphOps {
   def main(args: Array[String]) = {
@@ -18,24 +22,10 @@ object GraphOps {
         case (k, (TripleUtils.Triples(s, p, o), si)) => (o, (si, p))
       })
     val edges: RDD[Edge[String]] = tuples.join(indexVertexID).map({ case (k, ((si, p), oi)) => Edge(si, oi, p) })
-    val graph = Graph(vertices, edges)
-    graph.vertices.collect().foreach(println(_))
-    println("edges")
-    graph.edges.collect().foreach(println(_))
-    val subrealsourse = graph.subgraph(t => t.attr ==
-      "http://commons.dbpedia.org/property/source")
-    println("subrealsourse")
-    subrealsourse.vertices.collect().foreach(println(_))
-    val conncompo = subrealsourse.connectedComponents()
-    val pageranl = graph.pageRank(0.0001)
-    val printoutrankedtriples =
-      pageranl.vertices.join(graph.vertices)
-        .map({ case (k, (r, v)) => (k, r, v) })
-        .sortBy(5 - _._2)
-    println("printoutrankedtriples")
-    printoutrankedtriples.take(5).foreach(println(_))
-
+    val graph: Graph[(String), String] = Graph(vertices, edges)
+    graph.vertices.collect.foreach(println)
     spark.stop
-   
+
   }
+
 }
