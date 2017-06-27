@@ -24,9 +24,9 @@ object GraphOps {
       })
     val edges: RDD[Edge[String]] = tuples.join(indexVertexID).map({ case (k, ((si, p), oi)) => Edge(si, oi, p) })
     val graph: Graph[(String), String] = Graph(vertices, edges)
-    val gra= ShortestPaths.run(graph, s);
+    val gra = ShortestPaths.run(graph, s);
     gra.vertices.collect.foreach(println)
- 
+
   }
 
 }

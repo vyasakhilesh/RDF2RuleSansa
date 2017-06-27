@@ -6,20 +6,31 @@ import scala.Iterator
 
 object ShortestPaths {
 
-  type SPMap = Map[VertexId, Int]
+  case class ShortestPath(length: Int, path: List[VertexId])
+  type SPMap = Map[VertexId, ShortestPath]
 
-  private def makeMap(x: (VertexId, Int)*) = Map(x: _*)
 
-  private def incrementMap(spmap: SPMap): SPMap = spmap.map { case (v, d) => v -> (d + 1) }
+  private def makeMap(x: (VertexId, ShortestPath)*) = Map(x: _*)
+
+  private def incrementMap(dstId: VertexId, spmapDst: SPMap): SPMap = spmapDst map {
+    case (vId, ShortestPath(length, path)) => (vId, ShortestPath(length + 1, dstId :: path))
+  }
 
   private def addMaps(spmap1: SPMap, spmap2: SPMap): SPMap =
-    (spmap1.keySet ++ spmap2.keySet).map {
-      k => k -> math.min(spmap1.getOrElse(k, Int.MaxValue), spmap2.getOrElse(k, Int.MaxValue))
+    (spmap1.keySet ++ spmap2.keySet).map { k =>
+      k ->
+        ((spmap1.get(k), spmap2.get(k)) match {
+          case (Some(s1), Some(s2)) => if (s1.length < s2.length) s1 else s2
+          case (Some(s1), _)        => s1
+          case (_, Some(s2))        => s2
+          case _                    => throw new RuntimeException("Nonsense")
+        })
     }.toMap
 
+  
   def run[VD, ED: ClassTag](graph: Graph[VD, ED], landmarks: Seq[VertexId]): Graph[SPMap, ED] = {
     val spGraph = graph.mapVertices { (vid, attr) =>
-      if (landmarks.contains(vid)) makeMap(vid -> 0) else makeMap()
+      if (landmarks.contains(vid)) makeMap(vid -> ShortestPath(0, Nil)) else makeMap()
     }
 
     val initialMessage = makeMap()
@@ -29,7 +40,7 @@ object ShortestPaths {
     }
 
     def sendMessage(edge: EdgeTriplet[SPMap, _]): Iterator[(VertexId, SPMap)] = {
-      val newAttr = incrementMap(edge.dstAttr)
+      val newAttr = incrementMap(edge.dstId, edge.dstAttr)
       if (edge.srcAttr != addMaps(newAttr, edge.srcAttr)) Iterator((edge.srcId, newAttr))
       else Iterator.empty
     }
