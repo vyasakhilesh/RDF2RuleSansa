@@ -1,6 +1,4 @@
-package net.sansa_stack.template.spark.rdf
-
-import org.apache.spark.sql.SparkSession
+package net.sansa_stack.template.spark.reader
 
 object TripleUtils {
 
