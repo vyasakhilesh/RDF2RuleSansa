@@ -6,14 +6,15 @@ import scala.Iterator
 
 object ShortestPaths {
 
-  case class ShortestPath(length: Int, path: List[VertexId])
-  type SPMap = Map[VertexId, ShortestPath]
+  case class Path(length: Int, path: List[VertexId])
+  type SPMap = Map[VertexId, Path]
 
+  // private def makeMap(x: (VertexId, Int)*) = Map(x: _*)
+  private def makeMap(x: (VertexId, Path)*) = Map(x: _*)
 
-  private def makeMap(x: (VertexId, ShortestPath)*) = Map(x: _*)
-
+  // private def incrementMap(spmap: SPMap): SPMap = spmap.map { case (v, d) => v -> (d + 1) }
   private def incrementMap(dstId: VertexId, spmapDst: SPMap): SPMap = spmapDst map {
-    case (vId, ShortestPath(length, path)) => (vId, ShortestPath(length + 1, dstId :: path))
+    case (vId, Path(length, path)) => (vId, Path(length + 1, dstId :: path))
   }
 
   private def addMaps(spmap1: SPMap, spmap2: SPMap): SPMap =
@@ -27,10 +28,9 @@ object ShortestPaths {
         })
     }.toMap
 
-  
-  def run[VD, ED: ClassTag](graph: Graph[VD, ED], landmarks: Seq[VertexId]): Graph[SPMap, ED] = {
+  def run[VD, ED: ClassTag](graph: Graph[VD, ED], landmarks: List[VertexId]): Graph[SPMap, ED] = {
     val spGraph = graph.mapVertices { (vid, attr) =>
-      if (landmarks.contains(vid)) makeMap(vid -> ShortestPath(0, Nil)) else makeMap()
+      if (landmarks.contains(vid)) makeMap(vid -> Path(0, Nil)) else makeMap()
     }
 
     val initialMessage = makeMap()
