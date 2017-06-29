@@ -61,7 +61,9 @@ object Allpaths {
           } else {
             Iterator.empty
           }
-        } //All other iterations: A triplet is active, 
+        } 
+        
+        //All other iterations: A triplet is active, 
         // iff source and/or destination have received a message from previous iteration
         else {
           var sendMsgIterator: Set[(VertexId, List[List[PathEdge]])] = Set.empty
@@ -72,7 +74,7 @@ object Allpaths {
 
             val filteredPathsSrc = receivedPathsSrc.filter(path => path.exists(edge => !edge.containsId(triplet.dstId)))
             if (filteredPathsSrc.length != 0) {
-              //println("Valid Paths( without possible cycles =" + filteredPathsSrc.length)
+              println("Valid Paths without possible cycles =" + filteredPathsSrc.length)
               val newEdgeToAddToPathsSrc = new PathEdge(triplet.srcId, triplet.attr.toString(),
                 triplet.dstId, true)
               //Append new edge to remaining and send

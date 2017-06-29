@@ -25,11 +25,10 @@ object GraphOps {
     val edges: RDD[Edge[String]] = tuples.join(indexVertexID).map({ case (k, ((si, p), oi)) => Edge(si, oi, p) })
     vertices.collect().foreach { case (a, b) => seq += a }
     val graph: Graph[(String), String] = Graph(vertices, edges)
-    val gra = ShortestPaths.run(graph, seq.toList);
-     val ss = Allpaths.runPregel(687L, 365L, graph, EdgeDirection.Either)
-    //gra.vertices.collect.foreach(println)
-    print("Done")
-
+    //val gra = ShortestPaths.run(graph, seq.toList);
+    val allPaths = Allpaths.runPregel(335L, 138L, graph, EdgeDirection.Either)
+    // gra.vertices.collect.foreach(println)
+    println("Number of paths = " + allPaths.length)
   }
 
 }
