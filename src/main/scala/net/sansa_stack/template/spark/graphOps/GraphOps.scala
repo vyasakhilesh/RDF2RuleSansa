@@ -23,12 +23,12 @@ object GraphOps {
         case (k, (TripleUtils.Triples(s, p, o), si)) => (o, (si, p))
       })
     val edges: RDD[Edge[String]] = tuples.join(indexVertexID).map({ case (k, ((si, p), oi)) => Edge(si, oi, p) })
-
     vertices.collect().foreach { case (a, b) => seq += a }
-    
     val graph: Graph[(String), String] = Graph(vertices, edges)
     val gra = ShortestPaths.run(graph, seq.toList);
-    gra.vertices.collect.foreach(println)
+     val ss = Allpaths.runPregel(687L, 365L, graph, EdgeDirection.Either)
+    //gra.vertices.collect.foreach(println)
+    print("Done")
 
   }
 
