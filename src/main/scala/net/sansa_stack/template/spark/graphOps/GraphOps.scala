@@ -27,20 +27,24 @@ object GraphOps {
     vertices.collect().foreach { case (a, b) => seq += a }
 
     val graph = Graph(vertices, edges)
+    val tstart_walk = System.nanoTime()
     //val gra = ShortestPaths.run(graph, seq.toList);
     for (a <- seq) {
-
-      val allpath = Allpaths.runPregel(a, 654L, graph, EdgeDirection.Either)
-      if (allpath.length != 0) {
-        print("Number of paths between 654L " + a + " is", allpath.length)
-        for (a <- allpath) {
-          for (b <- a) {
-            print(b.edgeToString())
+      for (x <- seq) {
+        val allpath = Allpaths.runPregel(a, x, graph, EdgeDirection.Either)
+        if (allpath.length != 0) {
+          println("Number of paths lengths " + x + " " + a + " is", allpath.length)
+          for (a <- allpath) {
+            for (b <- a) {
+              println(b.edgeToString())
+            }
           }
         }
       }
 
     }
+    val tstop_walk = System.nanoTime()
+    println("Graph Walk Time (ms)=", (tstop_walk - tstart_walk) / 1000000L)
   }
 
 }

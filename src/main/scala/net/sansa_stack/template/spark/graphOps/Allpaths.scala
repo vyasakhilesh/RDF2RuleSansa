@@ -30,7 +30,7 @@ object Allpaths {
     val pathDstId = dest
     val initialMsg = List.empty[List[PathEdge]]
     val pregelGraph = graph.mapVertices((id, nodeData) => (id, List.empty[List[PathEdge]])).cache
-    val messages = pregelGraph.pregel[List[List[PathEdge]]](initialMsg, 10, activeDirection)(
+    val messages = pregelGraph.pregel[List[List[PathEdge]]](initialMsg, 3, activeDirection)(
       //Pregel Vertex program
       (vid, vertexDataWithPaths, newPathsReceived) => {
         // If reached destination, save all the paths received so far, 
