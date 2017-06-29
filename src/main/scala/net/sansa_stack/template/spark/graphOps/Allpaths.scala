@@ -61,9 +61,7 @@ object Allpaths {
           } else {
             Iterator.empty
           }
-        } 
-        
-        //All other iterations: A triplet is active, 
+        } //All other iterations: A triplet is active, 
         // iff source and/or destination have received a message from previous iteration
         else {
           var sendMsgIterator: Set[(VertexId, List[List[PathEdge]])] = Set.empty
@@ -74,7 +72,7 @@ object Allpaths {
 
             val filteredPathsSrc = receivedPathsSrc.filter(path => path.exists(edge => !edge.containsId(triplet.dstId)))
             if (filteredPathsSrc.length != 0) {
-              println("Valid Paths without possible cycles =" + filteredPathsSrc.length)
+              //println("Valid Paths( without possible cycles =" + filteredPathsSrc.length)
               val newEdgeToAddToPathsSrc = new PathEdge(triplet.srcId, triplet.attr.toString(),
                 triplet.dstId, true)
               //Append new edge to remaining and send
@@ -108,7 +106,7 @@ object Allpaths {
       (pathList1, pathList2) => pathList1 ++ pathList2) // End of Pregel
 
     val allPathsToDestination = messages.vertices.filter(_._1 == pathDstId).collect.apply(0)._2._2
-    println("FINAL PATHS TO DESTINATION " + src + " " + dest + " ", allPathsToDestination)
+   // println("FINAL PATHS TO DESTINATION " + src + " " + dest + " ", allPathsToDestination)
     return allPathsToDestination
   }
   def getPathLength(pathList1: List[List[PathEdge]], pathList2: List[List[PathEdge]]): Int = {

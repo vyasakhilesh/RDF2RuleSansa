@@ -3,6 +3,7 @@ package net.sansa_stack.template.spark.graphOps
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.rdd.RDD
 import org.apache.spark.graphx._
+
 import scala.collection.mutable.ListBuffer
 import net.sansa_stack.template.spark.reader.TripleUtils
 import org.apache.spark.graphx.Graph.graphToGraphOps
@@ -24,11 +25,22 @@ object GraphOps {
       })
     val edges: RDD[Edge[String]] = tuples.join(indexVertexID).map({ case (k, ((si, p), oi)) => Edge(si, oi, p) })
     vertices.collect().foreach { case (a, b) => seq += a }
-    val graph: Graph[(String), String] = Graph(vertices, edges)
+
+    val graph = Graph(vertices, edges)
     //val gra = ShortestPaths.run(graph, seq.toList);
-    val allPaths = Allpaths.runPregel(335L, 138L, graph, EdgeDirection.Either)
-    // gra.vertices.collect.foreach(println)
-    println("Number of paths = " + allPaths.length)
+    for (a <- seq) {
+
+      val allpath = Allpaths.runPregel(a, 654L, graph, EdgeDirection.Either)
+      if (allpath.length != 0) {
+        print("Number of paths between 654L " + a + " is", allpath.length)
+        for (a <- allpath) {
+          for (b <- a) {
+            print(b.edgeToString())
+          }
+        }
+      }
+
+    }
   }
 
 }
