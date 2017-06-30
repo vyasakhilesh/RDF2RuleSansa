@@ -1,7 +1,7 @@
 package net.sansa_stack.template.spark.rdf
 
 import org.apache.spark.sql.SparkSession
-
+//Author:
 object TripleUtils {
 
 	def parsTriples( parsData : String ) : Triples = {
