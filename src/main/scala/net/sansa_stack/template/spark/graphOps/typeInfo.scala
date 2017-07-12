@@ -5,7 +5,7 @@ import scala.Iterator
 
 object typeInfo {
 
-  def getOntologyMap(graph: Graph[String, String]): VertexRDD[(String, List[String])] = {
+  def getOntologyMap(graph: Graph[String, String]): VertexRDD[List[String]] = {
     val initialMsg: List[String] = List.empty
     val maxIterations = 5
     val activeDirection = EdgeDirection.Out
@@ -25,8 +25,7 @@ object typeInfo {
       (msg1, msg2) => msg1 ++ msg2)
 
     val vertexWithType = messages.vertices
-    //messages.vertices.collect.foreach(println)
-    graph.vertices.innerJoin(vertexWithType)((vid, label, typeList) => (label, typeList._3))
+    graph.vertices.innerJoin(vertexWithType)((vid, label, typeList) => (typeList._3))
 
   }
 
