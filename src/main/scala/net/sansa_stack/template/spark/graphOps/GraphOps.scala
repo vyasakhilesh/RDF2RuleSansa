@@ -11,9 +11,10 @@ import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 
 object GraphOps {
   def main(args: Array[String]) = {
-    val input = "src/main/resources/rdf.nt"
+    val input = "src/main/resources/datset.nt"
     val spark = SparkSession.builder.master("local[*]").config("spark.serializer", "org.apache.spark.serializer.KryoSerializer").appName("GraphX example").getOrCreate()
-    val tripleRDD = spark.sparkContext.textFile(input).map(TripleUtils.parsTriples)
+    val tripleRDD = spark.sparkContext.textFile(input).filter(!_.startsWith("#")).map(TripleUtils.parsTriples)
+    // println("Count " + tripleRDD.count())
     val tutleSubjectObject = tripleRDD.map { x => (x.subject, x.`object`) }
     type VertexId = Long
     val seq = new ListBuffer[VertexId]()
@@ -26,23 +27,26 @@ object GraphOps {
     val edges: RDD[Edge[String]] = tuples.join(indexVertexID).map({ case (k, ((si, p), oi)) => Edge(si, oi, p) })
     vertices.collect().foreach { case (a, b) => seq += a }
 
-    val graph = Graph(vertices, edges)
+    val graph = Graph(vertices, edges).cache()
+
     val tstart_walk = System.nanoTime()
-    //val gra = ShortestPaths.run(graph, seq.toList);
+   // val typeIn = typeInfo.getOntologyMap(graph)
+    //typeIn.collect.foreach(println)
     for (a <- seq) {
-      for (x <- seq) {
-        val allpath = Allpaths.runPregel(a, x, graph, EdgeDirection.Either)
+      for (b <- seq) {
+        val allpath = Allpaths.runPregel(a, b, graph, EdgeDirection.Either)
         if (allpath.length != 0) {
-          println("Number of paths lengths " + x + " " + a + " is", allpath.length)
+          println("Number of paths lengths "+ b +" " + a + " " + " is", allpath.length)
           for (a <- allpath) {
             for (b <- a) {
               println(b.edgeToString())
             }
+
           }
         }
       }
-
     }
+
     val tstop_walk = System.nanoTime()
     println("Graph Walk Time (ms)=", (tstop_walk - tstart_walk) / 1000000L)
   }

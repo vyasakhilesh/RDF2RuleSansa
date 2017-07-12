@@ -9,10 +9,8 @@ object ShortestPaths {
   case class Path(length: Int, path: List[VertexId])
   type SPMap = Map[VertexId, Path]
 
-  // private def makeMap(x: (VertexId, Int)*) = Map(x: _*)
   private def makeMap(x: (VertexId, Path)*) = Map(x: _*)
 
-  // private def incrementMap(spmap: SPMap): SPMap = spmap.map { case (v, d) => v -> (d + 1) }
   private def incrementMap(dstId: VertexId, spmapDst: SPMap): SPMap = spmapDst map {
     case (vId, Path(length, path)) => (vId, Path(length + 1, dstId :: path))
   }
