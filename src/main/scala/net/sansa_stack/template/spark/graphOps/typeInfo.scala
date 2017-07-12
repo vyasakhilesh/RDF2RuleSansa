@@ -5,7 +5,7 @@ import scala.Iterator
 
 object typeInfo {
 
-  def getOntologyMap(graph: Graph[String, String]): VertexRDD[List[String]] = {
+  def getTypeInfo(graph: Graph[String, String]): VertexRDD[List[String]] = {
     val initialMsg: List[String] = List.empty
     val maxIterations = 5
     val activeDirection = EdgeDirection.Out

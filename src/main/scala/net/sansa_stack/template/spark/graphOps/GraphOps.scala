@@ -28,9 +28,9 @@ object GraphOps {
     val graph = Graph(vertices, edges).cache()
     val tstart_walk = System.nanoTime()
 
-    val run = typeInfo.getOntologyMap(graph)
-    val typeo = run.map { x => (x._1, if (!x._2.isEmpty) List(x._2.groupBy(identity).mapValues(_.size).maxBy(_._2)._1)) }
-    typeo.collect.foreach(println)
+    val run = typeInfo.getTypeInfo(graph)
+    val typRdf = run.map { x => (x._1, if (!x._2.isEmpty) List(x._2.groupBy(identity).mapValues(_.size).maxBy(_._2)._1)) }
+    typRdf.collect.foreach(println)
     //val fpc = Allpaths.runPregel(graph, EdgeDirection.Out)
     //fpc.collect.foreach(println)
     val tstop_walk = System.nanoTime()
