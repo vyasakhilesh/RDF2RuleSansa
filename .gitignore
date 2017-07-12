@@ -21,6 +21,7 @@ buildNumber.properties
 .history
 .lib/
 .project
+resources/*
 dist/*
 target/
 lib_managed/
