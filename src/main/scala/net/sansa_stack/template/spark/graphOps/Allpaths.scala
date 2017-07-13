@@ -70,32 +70,32 @@ object Allpaths {
           if (isNodeActive(triplet.srcId, receivedPathsSrc, pathLength, pathDstId) &&
             (triplet.dstId == pathDstId)) {
 
-           // val filteredPathsSrc = receivedPathsSrc.filter(path => path.exists(edge => !edge.containsId(triplet.dstId)))
-          //  if (filteredPathsSrc.length != 0) {
+            val filteredPathsSrc = receivedPathsSrc.filter(path => path.exists(edge => !edge.containsId(triplet.dstId)))
+            if (filteredPathsSrc.length != 0) {
               //println("Valid Paths( without possible cycles =" + filteredPathsSrc.length)
               val newEdgeToAddToPathsSrc = new PathEdge(triplet.srcId, triplet.attr.toString(),
                 triplet.dstId, true)
               //Append new edge to remaining and send
-              val newPathsSrc = receivedPathsSrc.map(path => newEdgeToAddToPathsSrc :: path)
+              val newPathsSrc = filteredPathsSrc.map(path => newEdgeToAddToPathsSrc :: path)
               val sendMsgDest = (triplet.dstId, newPathsSrc)
               sendMsgIterator = sendMsgIterator.+(sendMsgDest)
-           // }
+            }
           }
 
           // Is triplet.destination an active vertex
           if (isNodeActive(triplet.dstId, receivedPathsDest, pathLength, pathDstId) &&
             (triplet.srcId == pathDstId)) {
 
-           // val filteredPathsDest = receivedPathsDest.filter(path => path.exists(edge => !edge.containsId(triplet.srcId)))
-            //if (filteredPathsDest.length != 0) {
+            val filteredPathsDest = receivedPathsDest.filter(path => path.exists(edge => !edge.containsId(triplet.srcId)))
+            if (filteredPathsDest.length != 0) {
               val newEdgeToAddToPathsDest = new PathEdge(triplet.dstId,
                 triplet.attr.toString(), triplet.srcId, false)
 
               //Append new edge to remaining and send
-              val newPathsDst = receivedPathsDest.map(path => newEdgeToAddToPathsDest :: path)
+              val newPathsDst = filteredPathsDest.map(path => newEdgeToAddToPathsDest :: path)
               val sendMsgSrc = (triplet.srcId, newPathsDst)
               sendMsgIterator = sendMsgIterator.+(sendMsgSrc)
-           // }
+            }
           }
           sendMsgIterator.toIterator
         }

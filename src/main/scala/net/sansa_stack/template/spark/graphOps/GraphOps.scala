@@ -9,8 +9,6 @@ import scala.collection.mutable.ListBuffer
 import org.apache.spark.graphx.Graph.graphToGraphOps
 import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 
-
-
 object GraphOps {
   def main(args: Array[String]) = {
     val input = "src/main/resources/rdf.nt"
@@ -29,8 +27,8 @@ object GraphOps {
     val edges: RDD[Edge[String]] = tuples.join(indexVertexID).map({ case (k, ((si, p), oi)) => Edge(si, oi, p) })
     val graph = Graph(vertices, edges).cache()
     val tstart_walk = System.nanoTime()
-    val path = AllpathsImpovised.getPath(graph)
-   
+    val path = AllpathsImpovised.runPregel(graph, EdgeDirection.Either)
+    path.collect.foreach { x => println(x._1 + ": " + x._2.foreach { y => y.foreach { q => q.edgeToString() } }) }
     /*val run = typeInfo.getTypeInfo(graph)
      val typRdf = run.map { x => (x._1, if (!x._2.isEmpty) List(x._2.groupBy(identity).mapValues(_.size).maxBy(_._2)._1)) }
     typRdf.collect.foreach(println)
@@ -49,7 +47,7 @@ object GraphOps {
         }
       }
 
-    }  */  
+    }  */
     val tstop_walk = System.nanoTime()
     println("Graph Walk Time (ms)=", (tstop_walk - tstart_walk) / 1000000L)
   }
