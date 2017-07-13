@@ -1,4 +1,4 @@
-package net.sansa_stack.template.spark.reader
+package net.sansa_stack.template.spark.graphOps
 
 object TripleUtils {
 

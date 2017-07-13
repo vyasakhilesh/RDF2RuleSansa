@@ -5,7 +5,7 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.graphx._
 
 import scala.collection.mutable.ListBuffer
-import net.sansa_stack.template.spark.reader.TripleUtils
+
 import org.apache.spark.graphx.Graph.graphToGraphOps
 import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 
@@ -28,13 +28,26 @@ object GraphOps {
     val graph = Graph(vertices, edges).cache()
     val tstart_walk = System.nanoTime()
 
-    val run = typeInfo.getTypeInfo(graph)
-    val typRdf = run.map { x => (x._1, if (!x._2.isEmpty) List(x._2.groupBy(identity).mapValues(_.size).maxBy(_._2)._1)) }
-    typRdf.collect.foreach(println)
-    //val fpc = Allpaths.runPregel(graph, EdgeDirection.Out)
-    //fpc.collect.foreach(println)
+    //val run = typeInfo.getTypeInfo(graph)
+    // val typRdf = run.map { x => (x._1, if (!x._2.isEmpty) List(x._2.groupBy(identity).mapValues(_.size).maxBy(_._2)._1)) }
+    //typRdf.collect.foreach(println)
+    //val gra = ShortestPaths.run(graph, seq.toList);
+   
+    for (a <- seq) {
+      for (x <- seq) {
+        val allpath = Allpaths.runPregel(a, x, graph, EdgeDirection.Either)
+        if (allpath.length != 0) {
+          println("Number of paths lengths " + x + " " + a + " is", allpath.length)
+          for (a <- allpath) {
+            for (b <- a) {
+              println(b.edgeToString())
+            }
+          }
+        }
+      }
+
+    }    
     val tstop_walk = System.nanoTime()
     println("Graph Walk Time (ms)=", (tstop_walk - tstart_walk) / 1000000L)
   }
-
 }
