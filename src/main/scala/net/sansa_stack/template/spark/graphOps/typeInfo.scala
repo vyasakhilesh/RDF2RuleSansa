@@ -10,8 +10,8 @@ object typeInfo {
     val maxIterations = 5
     val activeDirection = EdgeDirection.Out
 
+    
     val pregelGraph = graph.mapVertices((id, label) => (id, label, List.empty[String]))
-
     val messages = pregelGraph.pregel[List[String]](initialMsg, maxIterations, activeDirection)(
       (vid, oldMessage, newMessage) => (vid, oldMessage._2, newMessage ++ oldMessage._3),
 
@@ -24,6 +24,8 @@ object typeInfo {
       },
       (msg1, msg2) => msg1 ++ msg2)
 
+      
+      
     val vertexWithType = messages.vertices
     graph.vertices.innerJoin(vertexWithType)((vid, label, typeList) => (typeList._3))
 

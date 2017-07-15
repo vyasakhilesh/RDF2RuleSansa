@@ -8,6 +8,7 @@ import scala.collection.mutable.ListBuffer
 
 import org.apache.spark.graphx.Graph.graphToGraphOps
 import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
+import net.sansa_stack.template.spark.graphOps.Allpaths.PathEdge
 
 object GraphOps {
   def main(args: Array[String]) = {
@@ -26,29 +27,48 @@ object GraphOps {
       })
     val edges: RDD[Edge[String]] = tuples.join(indexVertexID).map({ case (k, ((si, p), oi)) => Edge(si, oi, p) })
     val graph = Graph(vertices, edges).cache()
+    vertices.collect().foreach { case (a, b) => seq += a }
     val tstart_walk = System.nanoTime()
-    val path = AllpathsImpovised.runPregel(graph, EdgeDirection.Either)
-    path.collect.foreach { x => println(x._1 + ": " + x._2.foreach { y => y.foreach { q => q.edgeToString() } }) }
-    /*val run = typeInfo.getTypeInfo(graph)
-     val typRdf = run.map { x => (x._1, if (!x._2.isEmpty) List(x._2.groupBy(identity).mapValues(_.size).maxBy(_._2)._1)) }
-    typRdf.collect.foreach(println)
-    val gra = ShortestPaths.run(graph, seq.toList);
-   
+    // val path = AllpathsImpovised.runPregel(graph, EdgeDirection.Either)
+    //path.collect.foreach { x => println(x._1 + ": " + x._2.foreach { y => y.foreach { q => q.edgeToString() } }) }
+    //  val run = typeInfo.getTypeInfo(graph)
+    // val typRdf = run.map { x => (x._1, if (!x._2.isEmpty) List(x._2.groupBy(identity).mapValues(_.size).maxBy(_._2)._1)) }
+    //typRdf.collect.foreach(println)
+    // val gra = ShortestPaths.run(graph, seq.toList);
+
     for (a <- seq) {
-      for (x <- seq) {
-        val allpath = Allpaths.runPregel(a, x, graph, EdgeDirection.Either)
-        if (allpath.length != 0) {
-          println("Number of paths lengths " + x + " " + a + " is", allpath.length)
-          for (a <- allpath) {
-            for (b <- a) {
-              println(b.edgeToString())
+      val allpath = Allpaths.runPregel(a, 654L, graph, EdgeDirection.Either)
+      if (allpath.length != 0) {
+        println("Number of paths lengths  654L " + a + " is", allpath.length)
+        if (allpath.length>2) {
+          for (singlePath <- allpath) {
+       
+            for (edge <- singlePath) {
+              println(edge.edgeToString())
+
             }
           }
         }
       }
+    }
 
-    }  */
     val tstop_walk = System.nanoTime()
     println("Graph Walk Time (ms)=", (tstop_walk - tstart_walk) / 1000000L)
+  }
+  def checkCycle(singlepath: List[List[PathEdge]]): Boolean = {
+    var alreadyseen = List[VertexId]()
+    for (a <- singlepath) {
+      for (x <- a) {
+        x.dstId :: alreadyseen
+        x.srcId :: alreadyseen
+      }
+    }
+
+    val s = alreadyseen.groupBy(identity).collect { case (x, List(_, _, _*)) => x }
+    if (s.size!=0) {
+      println(s)
+      return true
+    }
+    return false
   }
 }
