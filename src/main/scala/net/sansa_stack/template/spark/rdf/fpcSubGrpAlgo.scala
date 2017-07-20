@@ -39,7 +39,7 @@ object FrequentPathInfo extends App {
   val graph = Graph(vertices, edges.distinct())
   
   val edges: RDD[(String, String)] = graph.triplets.map(f=>(f.srcAttr, f.dstAttr))
-  val startVertices: RDD[String] = vertexRDD1.map(f=>f._2)
+  val startVertices: RDD[String] = vertices.map(f=>f._2)
   
  val initialStep = edges.join( startVertices.map( (_, "") ) ).mapValues( _._1 )
   val index = edges.map( _.swap ).persist() 
