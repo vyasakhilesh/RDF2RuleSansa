@@ -43,20 +43,19 @@ object  EntityTypeInformation extends App {
   val graph = Graph(vertices, edges.distinct())
      
       //Taking one predicate of FPC to know entities meanwhile
-  val predicateListFromFpc = List("http://data.semanticweb.org/ns/swc/ontology#heldBy")
-   // val predicateListFromFpc = graph.edges.flatMap(x=>List(x.attr)).collect().distinct.toList
+  //val predicateListFromFpc = List("http://data.semanticweb.org/ns/swc/ontology#heldBy")
+   val predicateListFromFpc = graph.edges.flatMap(x=>List(x.attr)).collect().distinct.toList
     
   val t1 = System.nanoTime
   
-  def searchEdge(edgeArg1:String, edgeArg2:String):Boolean={
+  /*def searchEdge(edgeArg1:String, edgeArg2:String):Boolean={
      edgeArg1==edgeArg2
-    }
+    }*/
   
- /* def searchEdge(edgeArg:String, edgeArgList:List[String]):Boolean={
+  def searchEdge(edgeArg:String, edgeArgList:List[String]):Boolean={
     edgeArgList.contains(edgeArg)
     
-  }*/
-  
+  }
   def searchDesEntity(id:Long, iDlist:List[Long], edgeArgument:String, typeArgument:String):Boolean= {
       ((iDlist.contains(id))&&(edgeArgument==typeArgument))
      }
@@ -67,11 +66,11 @@ object  EntityTypeInformation extends App {
     
   }
     
-  for(aPredict <- predicateListFromFpc)
+  //for(aPredict <- predicateListFromFpc)
   
-  {
+  //{
   
-    val setOfEntity = graph.triplets.filter(triple=> searchEdge(triple.attr, aPredict)).flatMap(triple=>List(triple.srcId)).cache()
+    val setOfEntity = graph.triplets.filter(triple=> searchEdge(triple.attr, predicateListFromFpc)).flatMap(triple=>List(triple.srcId)).cache()
     val setOfDistictEntity = setOfEntity.distinct().collect().toList
     //val printsetofdistictentity = setOfDistictEntity.foreach(println)
     
@@ -127,6 +126,7 @@ object  EntityTypeInformation extends App {
   
     val durationforUpdatedGraph = (System.nanoTime - t2) / 1e9d  
     println("\nDone--"+"Duration for Updating Graph:"+ durationforUpdatedGraph)
-  }
+  //}
     spark.stop
 }
+
