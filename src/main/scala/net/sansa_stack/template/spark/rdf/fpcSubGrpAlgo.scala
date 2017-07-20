@@ -47,18 +47,17 @@ object FrequentPathInfo extends App {
   //: RDD[(String, String)]
  
   def stepOver(prevStep: RDD[(String, String)], iteration: Int = 1): RDD[(String, String)] = {
-      val currStep = index.cogroup(prevStep.map( _.swap )).flatMapValues(pair =>
+      val currentStep = index.cogroup(prevStep.map( _.swap )).flatMapValues(pair =>
         for (i <- pair._1.iterator; ps <- pair._2.iterator)
           yield (ps, i) // ps - initial vertex, i - next vertex in path
-      )
-      //.setName( s"""Step_$iteration""").persist()
+      ).setName( s"""Step_$iteration""").persist()
       val count = currStep.count()
-    //  if (count == 0 || iteration == 25) currStep
-     // else currStep union stepOver(currStep, iteration + 1)
-    //  currStep
+       if (count == 0 || iteration == 25) currStep
+      else currentStep union stepOver(currentStep, iteration + 1)
+  
 }
   
-/*val allPaths = initStep union stepOver(initStep)
+/*val allPaths = initialStep union stepOver(initialStep)
 /* now we can collect all paths */
 val result = startVertices.map( (_, "") ).cougroup(allPaths).map( pair => (pair._1, pair._2._2.toList) )*/
 }
