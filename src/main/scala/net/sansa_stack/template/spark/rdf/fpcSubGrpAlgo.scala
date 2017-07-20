@@ -38,27 +38,27 @@ object FrequentPathInfo extends App {
    
   val graph = Graph(vertices, edges.distinct())
   
- // val edges: RDD[(String, String)] = ...
- // val startVertices: RDD[String] = ...
+  val edges: RDD[(String, String)] = graph.triplets.map(f=>(f.srcAttr, f.dstAttr))
+  val startVertices: RDD[String] = vertexRDD1.map(f=>f._2)
   
-  //val initStep = edges.join( startVertices.map( (_, "") ) ).mapValues( _._1 )
-  val initStep = edges
-  //val index = edges.map( _.swap ).persist() // we will iteratively join with this RDD
-  
- /* def stepOver(prevStep: RDD[(String, String)], iteration: Int = 1): RDD[(String, String)] = {
+ val initialStep = edges.join( startVertices.map( (_, "") ) ).mapValues( _._1 )
+  val index = edges.map( _.swap ).persist() // we will iteratively join with this RDD
+  index.foreach(println)
+  //: RDD[(String, String)]
+ 
+  def stepOver(prevStep: RDD[(String, String)], iteration: Int = 1): RDD[(String, String)] = {
       val currStep = index.cogroup(prevStep.map( _.swap )).flatMapValues(pair =>
         for (i <- pair._1.iterator; ps <- pair._2.iterator)
           yield (ps, i) // ps - initial vertex, i - next vertex in path
-      ).setName( s"""Step_$iteration""").persist()
+      )
+      //.setName( s"""Step_$iteration""").persist()
       val count = currStep.count()
-      if (count == 0 || iteration == 25) currStep
-      else currStep union stepOver(currStep, iteration + 1)
-}*/
+    //  if (count == 0 || iteration == 25) currStep
+     // else currStep union stepOver(currStep, iteration + 1)
+    //  currStep
+}
   
-/*  val allPaths = initStep union stepOver(initStep)
+/*val allPaths = initStep union stepOver(initStep)
 /* now we can collect all paths */
 val result = startVertices.map( (_, "") ).cougroup(allPaths).map( pair => (pair._1, pair._2._2.toList) )*/
-   
-    
-   spark.stop
 }
