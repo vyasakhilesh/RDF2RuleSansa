@@ -14,7 +14,7 @@ object FrequentPathInfo extends App {
   
   Logger.getLogger("org.apache.spark.SparkContext").setLevel(Level.WARN)
   
-  val inputDataSet = "src/main/resources/datset.nt"
+  val inputDataSet = "src/main/resources/rdf.nt"
   val conf = new SparkConf().setAppName("GraphXTest").setMaster("local")
   val sc = new SparkContext(conf)
    
@@ -38,18 +38,18 @@ object FrequentPathInfo extends App {
    
   val graph = Graph(vertices, edges.distinct())
   
-  val edges: RDD[(String, String)] = graph.triplets.map(f=>(f.srcAttr, f.dstAttr))
+  val edges1: RDD[(String, String)] = graph.triplets.map(f=>(f.srcAttr, f.dstAttr))
   val startVertices: RDD[String] = vertices.map(f=>f._2)
   
- val initialStep = edges.join( startVertices.map( (_, "") ) ).mapValues( _._1 )
-  val index = edges.map( _.swap ).persist() 
+ val initialStep = edges1.join( startVertices.map( (_, "") ) ).mapValues( _._1 )
+  val index = edges1.map( _.swap ).persist() 
  
   def stepOver(prevStep: RDD[(String, String)], iteration: Int = 1): RDD[(String, String)] = {
       val currentStep = index.cogroup(prevStep.map( _.swap )).flatMapValues(pair =>
         for (i <- pair._1.iterator; ps <- pair._2.iterator)
           yield (ps)).setName( s"""Step_$iteration""").persist()
       val count = currentStep.count()
-       if (count == 0 || iteration == 25) currentStep
+       if (count == 0 || iteration == 3) currentStep
       else currentStep union stepOver(currentStep, iteration + 1)
   
 }
