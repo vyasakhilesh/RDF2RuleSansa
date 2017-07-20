@@ -57,4 +57,5 @@ object FrequentPathInfo extends App {
 val allPaths = initialStep union stepOver(initialStep)
 /* now we can collect all paths */
 val result = startVertices.map( (_, "") ).cogroup(allPaths).map( pair => (pair._1, pair._2._2.toList))
+result.foreach(println)
 }
