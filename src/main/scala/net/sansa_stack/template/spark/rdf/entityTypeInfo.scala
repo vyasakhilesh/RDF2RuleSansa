@@ -52,6 +52,11 @@ object  EntityTypeInformation extends App {
      edgeArg1==edgeArg2
     }
   
+ /* def searchEdge(edgeArg:String, edgeArgList:List[String]):Boolean={
+    edgeArgList.contains(edgeArg)
+    
+  }*/
+  
   def searchDesEntity(id:Long, iDlist:List[Long], edgeArgument:String, typeArgument:String):Boolean= {
       ((iDlist.contains(id))&&(edgeArgument==typeArgument))
      }
