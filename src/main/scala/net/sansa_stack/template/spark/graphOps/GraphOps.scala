@@ -8,10 +8,11 @@ import scala.collection.mutable.ListBuffer
 
 import org.apache.spark.graphx.Graph.graphToGraphOps
 import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
-import net.sansa_stack.template.spark.graphOps.Allpaths.PathEdge
+import net.sansa_stack.template.spark.graphOps.Allpaths.Path
 
 object GraphOps {
   def main(args: Array[String]) = {
+
     val input = "src/main/resources/rdf.nt"
     val spark = SparkSession.builder.master("local[*]").config("spark.serializer", "org.apache.spark.serializer.KryoSerializer").appName("GraphX example").getOrCreate()
     val tripleRDD = spark.sparkContext.textFile(input).filter(!_.startsWith("#")).map(TripleUtils.parsTriples)
@@ -28,21 +29,42 @@ object GraphOps {
     val edges: RDD[Edge[String]] = tuples.join(indexVertexID).map({ case (k, ((si, p), oi)) => Edge(si, oi, p) })
     val graph = Graph(vertices, edges).cache()
     vertices.collect().foreach { case (a, b) => seq += a }
-    val tstart_walk = System.nanoTime()
-    // val path = AllpathsImpovised.runPregel(graph, EdgeDirection.Either)
-    //path.collect.foreach { x => println(x._1 + ": " + x._2.foreach { y => y.foreach { q => q.edgeToString() } }) }
-    //  val run = typeInfo.getTypeInfo(graph)
-    // val typRdf = run.map { x => (x._1, if (!x._2.isEmpty) List(x._2.groupBy(identity).mapValues(_.size).maxBy(_._2)._1)) }
-    //typRdf.collect.foreach(println)
-    // val gra = ShortestPaths.run(graph, seq.toList);
 
+    // END of Graph Creation
+
+    val tstart_walk = System.nanoTime()
+
+    /*Code to run the improvised algorithm
+    val path = AllpathsImpovised.runPregel(graph, EdgeDirection.Either)
+    path.collect.foreach(println)
+    
+    * 
+    * */
+
+    /*Code to run the improvised algorithm*/
+    val run = typeInfo.getTypeInfo(graph)
+    val typRdf = run.map { x => (x._1, if (!x._2.isEmpty) List(x._2.groupBy(identity).mapValues(_.size).maxBy(_._2)._1)) }
+    typRdf.collect.foreach(println)
+
+    /*
+     * Code to run the Shortest path algorithm
+    
+    		val gra = ShortestPaths.run(graph, seq.toList);
+
+* 
+ 			* */
+
+    /*
+     * Code to run the tradiitonal FPC algorithm
+    
+    	
     for (a <- seq) {
       val allpath = Allpaths.runPregel(a, 654L, graph, EdgeDirection.Either)
       if (allpath.length != 0) {
         println("Number of paths lengths  654L " + a + " is", allpath.length)
-        if (allpath.length>2) {
+        if (allpath.length > 2) {
           for (singlePath <- allpath) {
-       
+
             for (edge <- singlePath) {
               println(edge.edgeToString())
 
@@ -51,11 +73,13 @@ object GraphOps {
         }
       }
     }
-
+*/
     val tstop_walk = System.nanoTime()
     println("Graph Walk Time (ms)=", (tstop_walk - tstart_walk) / 1000000L)
   }
-  def checkCycle(singlepath: List[List[PathEdge]]): Boolean = {
+
+  // Function to check for cycles
+  def checkCycle(singlepath: List[List[Path]]): Boolean = {
     var alreadyseen = List[VertexId]()
     for (a <- singlepath) {
       for (x <- a) {
@@ -65,7 +89,7 @@ object GraphOps {
     }
 
     val s = alreadyseen.groupBy(identity).collect { case (x, List(_, _, _*)) => x }
-    if (s.size!=0) {
+    if (s.size != 0) {
       println(s)
       return true
     }

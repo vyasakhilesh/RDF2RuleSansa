@@ -4,6 +4,8 @@ import scala.reflect.ClassTag
 import org.apache.spark.graphx._
 import scala.Iterator
 
+// object tweeked to find shortest paths between all possible resources. Taken from SANSA shortest path (changed add maps method)  
+
 object ShortestPaths {
 
   case class Path(length: Int, path: List[VertexId])
