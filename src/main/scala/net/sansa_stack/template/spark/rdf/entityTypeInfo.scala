@@ -82,7 +82,7 @@ object  EntityTypeInformation extends App {
    
     val setOfTypeList = graph.triplets.filter(triple=>searchDesEntity(triple.srcId, setOfDistictEntity , triple.attr, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type")).map(x=>(x.dstId, 1)).reduceByKey((a,b)=>(a+b)).cache()
   
-    val support_count = 1
+    val support_count = 10
     
     var freqSetOfTypeList = setOfTypeList.filter(feqEntity=>feqEntity._2 >= support_count).sortBy(_._2, false)
    
