@@ -128,7 +128,7 @@ object  EntityTypeInformation extends App {
     val edgeRDD: RDD[Edge[String]] = sc.parallelize(edgeArray)
    
     println("----------------Printing New edges------------------")
-   // edgeRDD.foreach(println)
+    edgeRDD.foreach(println)
   
     val graphUpdated = Graph(vertices, edges.union(edgeRDD).distinct())
     
