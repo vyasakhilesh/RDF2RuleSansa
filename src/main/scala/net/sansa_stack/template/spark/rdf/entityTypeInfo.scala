@@ -11,6 +11,7 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.rdd.RDD
 import org.apache.spark.graphx._
 import org.apache.log4j._
+import scala.collection.mutable.ArrayBuffer
 
 object  EntityTypeInformation extends App {
   
@@ -113,17 +114,21 @@ object  EntityTypeInformation extends App {
     /* Adding TypeInformation to Real Graph */
     val t2 = System.nanoTime
   
-    val edgeArray:Array[Edge[String]] = Array()
+    //val edgeArray:Array[Edge[String]] = Array()
+   val edgeArray:ArrayBuffer[Edge[String]]=ArrayBuffer[Edge[String]]()
   
     for(i <- 0 to (freqSetOfTypeList.collect().toList.length - 1))
    {
      for(j <- 0 to (setOfDistictEntity.length - 1 ))
     {
-       edgeArray:+Edge(setOfDistictEntity(j), freqSetOfTypeList.collect().toList(i)._1,"http://www.w3.org/1999/02/22-rdf-syntax-ns#type" )
+       edgeArray+=Edge(setOfDistictEntity(j), freqSetOfTypeList.collect().toList(i)._1,"http://www.w3.org/1999/02/22-rdf-syntax-ns#type" )
     }
    }
   
     val edgeRDD: RDD[Edge[String]] = sc.parallelize(edgeArray)
+   
+    println("----------------Printing New edges------------------")
+   // edgeRDD.foreach(println)
   
     val graphUpdated = Graph(vertices, edges.union(edgeRDD).distinct())
     
